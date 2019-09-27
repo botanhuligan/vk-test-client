@@ -1,0 +1,24 @@
+version: '3.6'
+services:
+
+  back:
+      volumes:
+        - .:/app
+      build:
+        context: .
+        dockerfile: Dockerfile
+      container_name: vk-test-client
+      ports:
+        - 9081:9081
+      env_file:
+        - ./.env
+      hostname: vk-test-client
+      command: python3 chat.py
+      networks:
+        - server
+      restart: always
+
+
+networks:
+  server:
+    external: true

@@ -23,19 +23,30 @@ headers = {'Content-type': 'application/json',  # Определение тип�
 def joined(message):
     """Sent by clients when they enter a room.
     A status message is broadcast to all people in the room."""
-    join_room(session.get('name'))
-    emit('status', {'msg': session.get('name') + ' has entered the room'}, room=session.get('name'))
+    if "user_id" in message:
+        session['name'] = message["user_id"]
+        name = message["user_id"]
+    else:
+        name = session.get('name')
+
+    join_room(name)
+    emit('status', {'msg': name + ' has entered the room'}, room=session.get('name'))
 
 
 @socketio.on('text', namespace='/chat')
 def text(message):
     """Sent by a client when the user entered a new message.
     The message is sent to all people in the room."""
-    name = session.get('name')
+    if "user_id" in message:
+        session['name'] = message["user_id"]
+        name = message["user_id"]
+    else:
+        name = session.get('name')
+
     msg = message['msg']
     time = datetime.now().strftime('%H:%M:%S')
 
-    emit('message', {'msg': time + " " + name + ': ' + msg}, room=session.get('name'))
+    emit('out', {'msg': time + " " + name + ': ' + msg}, room=session.get('name'))
     requests.post("http://back:9080/message",
                   json.dumps(message_from_user(name, msg)),
                   headers=headers)

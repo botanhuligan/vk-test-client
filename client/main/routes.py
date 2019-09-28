@@ -13,9 +13,19 @@ ROOM = "ChatBot"
 @main.route('/say', methods=['POST'])
 def post():
     rq = request.json
+    result = {}
     request.__dict__['namespace'] = '/chat'
-    time = datetime.now().strftime('%H:%M:%S')
-    emit('message', {'msg': time + ' ANSWER to user <' + rq["user_id"] + '>:  ' + rq["message_text"]}, room=rq["user_id"])
+    # time = datetime.now().strftime('%H:%M:%S')
+    if "message_text" in rq:
+        result['msg'] = rq["message_text"]
+    if "message_say" in rq:
+        result['voice'] = rq["message_say"]
+    if "url_img" in rq:
+        result['url_img'] = rq["url_img"]
+    if "url_voice" in rq:
+        result['url_voice'] = rq["url_voice"]
+
+    emit('message', result, room=rq["user_id"])
     return 'OK'
 
 

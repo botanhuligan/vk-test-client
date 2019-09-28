@@ -15,7 +15,7 @@ def post():
     rq = request.json
     request.__dict__['namespace'] = '/chat'
     time = datetime.now().strftime('%H:%M:%S')
-    emit('message', {'msg': time + ' ANSWER to user <' + rq["user_id"] + '>:  ' + rq["message_text"]}, room=ROOM)
+    emit('message', {'msg': time + ' ANSWER to user <' + rq["user_id"] + '>:  ' + rq["message_text"]}, room=rq["user_id"])
     return 'OK'
 
 
@@ -26,7 +26,7 @@ def log():
     log_text = rq['log']
     request.__dict__['namespace'] = '/chat'
     time = datetime.now().strftime('%H:%M:%S')
-    emit('logs', {'msg': time + " " + user + ": " + log_text}, room=ROOM)
+    emit('logs', {'msg': time + " " + user + ": " + log_text}, room=rq["user_id"])
     return 'OK'
 
 
@@ -50,4 +50,4 @@ def chat():
     name = session.get('name', '')
     if name == '':
         return redirect(url_for('.index'))
-    return render_template('chat.html', name=name, room=ROOM)
+    return render_template('chat.html', name=name, room=name)
